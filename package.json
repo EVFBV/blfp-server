@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test",
-    "build:protected": "node scripts/build-protected.js"
+    "build:protected": "node scripts/build-protected.js",
+    "start:chat": "node chat-server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
