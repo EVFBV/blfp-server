@@ -191,6 +191,11 @@ wss.on('connection', (ws, request) => {
 
   console.log('[Chat] 连接: ' + ws.user.username + '（在线 ' + wss.clients.size + '）');
 
+  /* 明确告知客户端：鉴权已通过（客户端据此确认"已连接到聊天室"） */
+  try {
+    ws.send(JSON.stringify({ type: 'ready', service: 'chat', you: { id: ws.user.id, username: ws.user.username, role: ws.user.role }, connections: wss.clients.size, at: Date.now() }));
+  } catch (e) {}
+
   /* 连接即推送当前公告（有内容时） */
   const ann = readAnnouncement();
   if (ann.content && ann.enabled) {
