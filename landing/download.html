@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>下载 BLFP 联机助手</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(1200px 600px at 70% -10%, rgba(30, 79, 216, .18), transparent 60%), #000000;
+    color: #e8e8ec;
+    font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .float-card {
+    width: min(440px, calc(100vw - 48px));
+    background: rgba(20, 20, 22, .92);
+    border: 1px solid #26262b;
+    border-radius: 18px;
+    padding: 34px 30px 28px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .6), 0 0 0 1px rgba(30, 79, 216, .12);
+    backdrop-filter: blur(14px);
+    animation: floatIn .5s ease both, hover 5s ease-in-out 1s infinite alternate;
+  }
+  @keyframes floatIn { from { opacity: 0; transform: translateY(26px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes hover { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+  .head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .head img { width: 46px; height: 46px; border-radius: 12px; }
+  .head h1 { font-size: 1.25rem; letter-spacing: .04em; }
+  .head .ver { font-size: .75rem; color: #8b8b94; margin-top: 3px; }
+  .desc { color: #8b8b94; font-size: .85rem; line-height: 1.7; margin: 10px 0 22px; }
+  .dl-list { display: flex; flex-direction: column; gap: 12px; }
+  .dl-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 16px; border-radius: 12px;
+    background: #141416; border: 1px solid #26262b;
+    color: #e8e8ec; text-decoration: none;
+    transition: border-color .18s, transform .18s, background .18s;
+  }
+  .dl-item:hover { border-color: #1e4fd8; transform: translateX(4px); background: #17181c; }
+  .dl-item svg { width: 22px; height: 22px; flex: none; fill: #e8e8ec; }
+  .dl-item .meta { flex: 1; }
+  .dl-item .meta b { display: block; font-size: .92rem; }
+  .dl-item .meta span { font-size: .74rem; color: #8b8b94; }
+  .dl-item .arrow { color: #1e4fd8; font-weight: 700; }
+  .dl-item.disabled { opacity: .45; pointer-events: none; }
+  .foot { margin-top: 20px; text-align: center; font-size: .74rem; color: #55555c; }
+  .foot a { color: #4d7dff; text-decoration: none; }
+</style>
+</head>
+<body>
+  <div class="float-card">
+    <div class="head">
+      <img src="/BLFP-Logo.svg" alt="BLFP">
+      <div>
+        <h1 id="site-title">BLFP 联机助手</h1>
+        <div class="ver" id="ver">全平台客户端下载</div>
+      </div>
+    </div>
+    <p class="desc">选择你的操作系统，下载对应客户端。Windows 客户端为安装版，Linux / MacOS 提供便携版。</p>
+    <div class="dl-list">
+      <a class="dl-item" id="dl-win" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M3 5.5 10.5 4.4v7.1H3V5.5zm0 13 7.5 1.1v-7.1H3v6zM11.5 4.2 21 3v8.5h-9.5V4.2zm0 15.6L21 21v-8.5h-9.5v7.3z"/></svg>
+        <div class="meta"><b>Windows</b><span>安装版 · 推荐 Windows 10/11</span></div>
+        <span class="arrow">↓</span>
+      </a>
+      <a class="dl-item" id="dl-linux" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 2c-2.6 0-4.2 2-4.2 4.6 0 1.7-.5 2.9-1.4 4.2-.9 1.4-2 2.9-2 5 0 1.6.7 3 1.8 3.9.5.4 1.1.6 1.8.6.6 0 1.2-.2 1.7-.5.7.4 1.5.6 2.3.6s1.6-.2 2.3-.6c.5.3 1.1.5 1.7.5.7 0 1.3-.2 1.8-.6 1.1-.9 1.8-2.3 1.8-3.9 0-2.1-1.1-3.6-2-5-.9-1.3-1.4-2.5-1.4-4.2C16.2 4 14.6 2 12 2zm-1.6 4.2c.4 0 .8.4.8 1s-.4 1-.8 1-.8-.4-.8-1 .4-1 .8-1zm3.2 0c.4 0 .8.4.8 1s-.4 1-.8 1-.8-.4-.8-1 .4-1 .8-1z"/></svg>
+        <div class="meta"><b>Linux</b><span>便携版 · AppImage / deb</span></div>
+        <span class="arrow">↓</span>
+      </a>
+      <a class="dl-item" id="dl-macos" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M16.7 12.9c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3.1 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.6-1-2.7-3.9zM14.4 5.6c.7-.8 1.1-1.9 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4z"/></svg>
+        <div class="meta"><b>MacOS</b><span>便携版 · Apple Silicon / Intel</span></div>
+        <span class="arrow">↓</span>
+      </a>
+    </div>
+    <div class="foot">BLFP 联机助手 · <a href="/">返回官网</a></div>
+  </div>
+<script>
+(async () => {
+  try {
+    const res = await fetch('/api/settings/public');
+    const s = await res.json();
+    if (s.site_title) document.getElementById('site-title').textContent = s.site_title;
+    if (s.latest_version) document.getElementById('ver').textContent = '最新版本 v' + s.latest_version + ' · 全平台客户端下载';
+    const map = { 'dl-win': s.downloads && s.downloads.win, 'dl-linux': s.downloads && s.downloads.linux, 'dl-macos': s.downloads && s.downloads.macos };
+    for (const [id, url] of Object.entries(map)) {
+      const el = document.getElementById(id);
+      if (url) el.href = url; else el.classList.add('disabled');
+    }
+  } catch (e) {
+    document.getElementById('ver').textContent = '加载下载链接失败，请稍后再试';
+  }
+})();
+</script>
+</body>
+</html>

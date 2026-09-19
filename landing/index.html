@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BLFP 我的世界 Java 版联机平台">
+  <title>BLFP 我的世界联机平台</title>
+  <link rel="stylesheet" href="/landing.css">
+  <link rel="icon" type="image/svg+xml" href="/BLFP-Logo.svg">
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/"><img src="/BLFP-Logo.svg" alt="BLFP" draggable="false"></a>
+    <a class="console-link" href="https://p.blfp.cn/">进入控制台</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="glow one"></div><div class="glow two"></div>
+      <span class="eyebrow">MINECRAFT JAVA MULTIPLAYER</span>
+      <h1 id="site-title">让好友联机<br><span>变得更简单</span></h1>
+      <p id="site-desc">Easytier P2P 低延迟直连与 frp 稳定穿透双模式，无需公网 IP，用 6 位房间号快速连接好友世界。</p>
+      <div class="actions">
+        <a id="download-link" class="primary" href="#" onclick="openDownloadOverlay(); return false;">下载客户端</a>
+        <a class="secondary" href="https://p.blfp.cn/">登录 / 注册</a>
+      </div>
+      <div class="room-demo"><span class="dot"></span><span>输入房间号</span><strong>268 491</strong><span class="connected">快速连接</span></div>
+    </section>
+
+    <section class="features">
+      <article><div class="number">01</div><h2>EasyTier P2P</h2><p>EasyTier 自动尝试 P2P 直连；网络环境受限时，自动经共享节点中继。</p></article>
+      <article><div class="number">02</div><h2>frp 内网穿透</h2><p>frp 暂时保留为备用固定中转，可通过固定节点映射公网地址连接好友。</p></article>
+      <article><div class="number">03</div><h2>6 位房间号</h2><p>无需记忆复杂地址。创建房间后分享 6 位数字，即可查询并加入联机。</p></article>
+    </section>
+
+    <section class="cta">
+      <div><span>READY TO PLAY?</span><h2>现在开始联机</h2></div>
+      <a href="https://p.blfp.cn/">进入 BLFP 控制台</a>
+    </section>
+  </main>
+
+  <footer><span>© BLFP</span><span>QQ交流群：229527551</span><span>Minecraft Java 联机平台</span></footer>
+
+<!-- 下载叠加层 -->
+<div class="dl-overlay" id="dl-overlay" onclick="if(event.target===this)closeDownloadOverlay()">
+  <div class="dl-card" role="dialog" aria-modal="true" aria-label="下载客户端">
+    <button class="dl-close" onclick="closeDownloadOverlay()" aria-label="关闭">&times;</button>
+    <img class="dl-logo" src="/BLFP-Logo.svg" alt="BLFP">
+    <h2 id="dl-title">下载 BLFP 联机助手</h2>
+    <p class="dl-sub" id="dl-ver">全平台客户端下载</p>
+    <div class="dl-list">
+      <a class="dl-item" id="dl-win" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M3 5.5 10.5 4.4v7.1H3V5.5zm0 13 7.5 1.1v-7.1H3v6zM11.5 4.2 21 3v8.5h-9.5V4.2zm0 15.6L21 21v-8.5h-9.5v7.3z"/></svg>
+        <div class="dl-meta"><b>Windows</b><span>安装版 · 推荐 Windows 10/11</span></div>
+        <span class="dl-arrow">↓</span>
+      </a>
+      <a class="dl-item" id="dl-linux" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 2c-2.6 0-4.2 2-4.2 4.6 0 1.7-.5 2.9-1.4 4.2-.9 1.4-2 2.9-2 5 0 1.6.7 3 1.8 3.9.5.4 1.1.6 1.8.6.6 0 1.2-.2 1.7-.5.7.4 1.5.6 2.3.6s1.6-.2 2.3-.6c.5.3 1.1.5 1.7.5.7 0 1.3-.2 1.8-.6 1.1-.9 1.8-2.3 1.8-3.9 0-2.1-1.1-3.6-2-5-.9-1.3-1.4-2.5-1.4-4.2C16.2 4 14.6 2 12 2zm-1.6 4.2c.4 0 .8.4.8 1s-.4 1-.8 1-.8-.4-.8-1 .4-1 .8-1zm3.2 0c.4 0 .8.4.8 1s-.4 1-.8 1-.8-.4-.8-1 .4-1 .8-1z"/></svg>
+        <div class="dl-meta"><b>Linux</b><span>便携版 · AppImage / deb</span></div>
+        <span class="dl-arrow">↓</span>
+      </a>
+      <a class="dl-item" id="dl-macos" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M16.7 12.9c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3.1 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.6-1-2.7-3.9zM14.4 5.6c.7-.8 1.1-1.9 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4z"/></svg>
+        <div class="dl-meta"><b>MacOS</b><span>便携版 · Apple Silicon / Intel</span></div>
+        <span class="dl-arrow">↓</span>
+      </a>
+    </div>
+    <div class="dl-foot">BLFP 联机助手 · <a href="/">返回官网</a></div>
+  </div>
+</div>
+<script src="/landing.js"></script>
+</body>
+</html>

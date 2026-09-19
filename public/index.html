@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLFP 我的世界联机平台</title>
+  <link rel="stylesheet" href="/style.css?v=2.1.0">
+  <link rel="icon" type="image/svg+xml" href="/BLFP-Logo.svg">
+</head>
+<body>
+
+<!-- ====== 宣传页 / 落地页（未登录默认展示）====== -->
+<div id="landing-page" class="landing hidden">
+  <div class="landing-nav">
+    <img class="logo" src="/BLFP-Logo.svg" alt="BLFP">
+    <button class="btn btn-primary" onclick="showAuth()">登录 / 注册</button>
+  </div>
+  <div class="landing-hero">
+    <h1 id="landing-title">BLFP 我的世界联机平台</h1>
+    <p class="lead" id="landing-desc">BLFP 是一款专为《我的世界》Java 版打造的联机软件，采用 EasyTier P2P 直连与共享节点中继，无需公网 IP，即可与好友畅快联机。</p>
+    <div class="hero-actions">
+      <a id="landing-download" class="btn btn-primary btn-lg" href="#" onclick="openDownloadOverlay(); return false;">下载 BLFP 客户端</a>
+      <button class="btn btn-outline btn-lg" onclick="showAuth()">登录 / 注册</button>
+    </div>
+  </div>
+  <div class="landing-features">
+    <div class="feature-card">
+      <div class="ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+      <h3>低延迟直连</h3>
+      <p>优先使用 P2P 打洞直连，数据不经中转，延迟更低，游戏体验更流畅。</p>
+    </div>
+    <div class="feature-card">
+      <div class="ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></div>
+      <h3>免公网 IP</h3>
+      <p>没有公网 IP 也能开服。P2P 打洞失败时自动切换已配置的 EasyTier 节点中继，稳定可靠。</p>
+    </div>
+    <div class="feature-card">
+      <div class="ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg></div>
+      <h3>6 位房间号</h3>
+      <p>房主创建房间生成 6 位房间号，分享给好友即可秒进，操作简单。</p>
+    </div>
+    <div class="feature-card">
+      <div class="ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+      <h3>安全稳定</h3>
+      <p>账号体系 + 多节点 EasyTier 中继，按需配置共享节点，连接更稳定。</p>
+    </div>
+  </div>
+  <div class="landing-footer">© BLFP 我的世界 Java 版联机平台</div>
+</div>
+
+<div id="setup-page" class="setup-wrap hidden">
+  <div class="setup-box">
+    <div class="setup-kicker">BLFP CONTROL PLANE</div>
+    <div class="logo" id="setup-title">首次初始化</div>
+    <div class="subtitle" id="setup-subtitle">完成服务端配置后，即可进入管理控制台</div>
+
+    <!-- 模式切换 -->
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <button type="button" id="smode-fresh" class="btn btn-primary btn-sm" onclick="switchSetupMode('fresh')">全新安装</button>
+      <button type="button" id="smode-upgrade" class="btn btn-outline btn-sm" onclick="switchSetupMode('upgrade')">更新模式（保留数据）</button>
+    </div>
+
+    <!-- 全新安装表单 -->
+    <form id="setup-form" onsubmit="submitSetup(event)">
+      <div class="setup-section">
+        <div class="setup-section-title">MySQL 数据库</div>
+        <div class="setup-grid">
+          <div class="form-group"><label for="setup-mysql-host">主机</label><input id="setup-mysql-host" required value="127.0.0.1" placeholder="127.0.0.1"></div>
+          <div class="form-group"><label for="setup-mysql-port">端口</label><input id="setup-mysql-port" type="number" min="1" max="65535" required value="3306" placeholder="3306"></div>
+          <div class="form-group"><label for="setup-mysql-user">用户名</label><input id="setup-mysql-user" required value="root" placeholder="数据库用户名"></div>
+          <div class="form-group"><label for="setup-mysql-password">密码</label><input id="setup-mysql-password" type="password" placeholder="数据库密码"></div>
+          <div class="form-group"><label for="setup-mysql-database">数据库名</label><input id="setup-mysql-database" required value="mclink" placeholder="mclink"></div>
+          <div class="form-group"><label for="setup-mysql-limit">连接数</label><input id="setup-mysql-limit" type="number" min="1" value="10" placeholder="10"></div>
+        </div>
+      </div>
+      <div class="setup-section">
+        <div class="setup-section-title">EasyTier 中继节点</div>
+        <div class="form-group"><label for="setup-easytier-peers">Peer 地址（至少 1 个，每行一个）</label><textarea id="setup-easytier-peers" rows="4" required placeholder="tcp://node.example.com:11010&#10;udp://node.example.com:11010"></textarea><small>支持 tcp/udp/ws/wss://host:port，地址必须唯一且合法。</small></div>
+      </div>
+      <div class="setup-section">
+        <div class="setup-section-title">管理员账号</div>
+        <div class="form-group"><label for="setup-username">用户名（3-20 位）</label><input id="setup-username" required minlength="3" maxlength="20" placeholder="管理员用户名"></div>
+        <div class="form-group"><label for="setup-password">密码（至少 12 位）</label><input id="setup-password" type="password" required minlength="12" autocomplete="new-password" placeholder="请设置管理员密码"></div>
+        <div class="form-group"><label for="setup-email">邮箱</label><input id="setup-email" type="email" required autocomplete="email" placeholder="用于账号联系的邮箱"></div>
+      </div>
+      <button id="setup-submit" class="btn btn-primary btn-full" type="submit">完成初始化</button>
+    </form>
+
+    <!-- 更新模式表单 -->
+    <form id="upgrade-form" class="hidden" onsubmit="submitUpgrade(event)">
+      <div class="setup-section">
+        <div class="setup-section-title">连接已有数据库</div>
+        <p style="font-size:.85rem;color:var(--text2);margin-bottom:12px">更新模式只连接到已有数据库，自动补全新表字段和设置项，<strong>不会修改或删除任何已有数据</strong>。</p>
+        <div class="setup-grid">
+          <div class="form-group"><label for="upg-mysql-host">主机</label><input id="upg-mysql-host" required value="127.0.0.1" placeholder="127.0.0.1"></div>
+          <div class="form-group"><label for="upg-mysql-port">端口</label><input id="upg-mysql-port" type="number" min="1" max="65535" required value="3306" placeholder="3306"></div>
+          <div class="form-group"><label for="upg-mysql-user">用户名</label><input id="upg-mysql-user" required value="root" placeholder="数据库用户名"></div>
+          <div class="form-group"><label for="upg-mysql-password">密码</label><input id="upg-mysql-password" type="password" placeholder="数据库密码"></div>
+          <div class="form-group"><label for="upg-mysql-database">数据库名</label><input id="upg-mysql-database" required value="mclink" placeholder="mclink"></div>
+          <div class="form-group"><label for="upg-mysql-limit">连接数</label><input id="upg-mysql-limit" type="number" min="1" value="10" placeholder="10"></div>
+        </div>
+      </div>
+      <button id="upgrade-submit" class="btn btn-primary btn-full" type="submit">执行更新</button>
+    </form>
+  </div>
+</div>
+
+<!-- ====== 登录/注册页 ====== -->
+<div id="auth-page" class="auth-wrap hidden">
+  <div class="auth-box">
+    <img class="logo" src="/BLFP-Logo.svg" alt="BLFP">
+    <div class="subtitle">我的世界 Java 版联机平台</div>
+    <div class="auth-tabs">
+      <button id="tab-login" class="active" onclick="showAuthTab('login')">登录</button>
+      <button id="tab-reg" onclick="showAuthTab('reg')">注册账号</button>
+    </div>
+
+    <!-- 登录表单 -->
+    <div id="form-login">
+      <div class="login-switch" style="display:flex;gap:8px;margin-bottom:14px">
+        <button type="button" id="lm-pass" class="btn btn-outline btn-sm active" onclick="switchLoginMethod('pass')">密码登录</button>
+        <button type="button" id="lm-code" class="btn btn-outline btn-sm" onclick="switchLoginMethod('code')">邮箱验证码登录</button>
+      </div>
+      <!-- 密码登录 -->
+      <div id="login-by-pass">
+        <div class="form-group"><label>用户名 / 邮箱</label><input id="l-user" type="text" placeholder="请输入用户名或邮箱"></div>
+        <div class="form-group"><label>密码</label><input id="l-pass" type="password" placeholder="请输入密码"></div>
+      </div>
+      <!-- 验证码登录 -->
+      <div id="login-by-code" class="hidden">
+        <div class="form-group"><label>邮箱</label><input id="l-email" type="email" placeholder="请输入注册邮箱"></div>
+        <div class="form-group"><label>验证码</label>
+          <div style="display:flex;gap:8px">
+            <input id="l-code" type="text" placeholder="6 位验证码" style="flex:1">
+            <button type="button" id="l-send-code" class="btn btn-outline" onclick="sendCode('login')">获取验证码</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">登录</button>
+    </div>
+
+    <!-- 2FA 验证面板 -->
+    <div id="form-2fa" class="hidden">
+      <p style="color:var(--text2);margin-bottom:12px;font-size:.9rem">该账号已开启两步验证，请选择验证方式</p>
+      <div id="tfa-method-btns" style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="btn btn-outline" id="tfa-btn-email" onclick="requestTfaCode('email')">发送邮箱验证码</button>
+        <button class="btn btn-outline" id="tfa-btn-qq" onclick="showTfaQq()">QQ 验证码</button>
+      </div>
+      <div class="form-group"><label>验证码</label>
+        <div style="display:flex;gap:8px">
+          <input id="tfa-code" type="text" placeholder="6 位数字 / QQ 5位验证码" style="flex:1">
+          <select id="tfa-method" style="width:80px"><option value="email">邮箱</option><option value="qq">QQ</option></select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="submitTfa()">确认验证</button>
+      <div style="text-align:center;margin-top:10px"><a href="#" style="font-size:.85rem;color:var(--text2)" onclick="cancelTfa()">← 返回登录</a></div>
+    </div>
+
+    <!-- 注册表单 -->
+    <div id="form-reg" class="hidden">
+      <div class="form-group"><label>用户名 (3-20位)</label><input id="r-user" type="text" placeholder="请输入用户名"></div>
+      <div class="form-group"><label>密码 (至少6位)</label><input id="r-pass" type="password" placeholder="请设置密码"></div>
+      <div class="form-group"><label>邮箱</label><input id="r-email" type="email" placeholder="请输入邮箱"></div>
+      <div class="form-group"><label>邮箱验证码</label>
+        <div style="display:flex;gap:8px">
+          <input id="r-code" type="text" placeholder="6 位验证码" style="flex:1">
+          <button type="button" id="r-send-code" class="btn btn-outline" onclick="sendCode('register')">获取验证码</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRegister()">注册</button>
+    </div>
+
+    <!-- 返回宣传页 -->
+    <div style="text-align:center;margin-top:18px">
+      <a href="https://www.blfp.cn/" style="font-size:.85rem;color:var(--text2)">← 返回宣传首页</a>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 主应用（登录后显示）====== -->
+<div id="main-app" class="hidden">
+  <nav>
+    <img class="logo" src="/BLFP-Logo.svg" alt="BLFP">
+    <div class="nav-links">
+      <a href="#" data-page="dashboard" class="active" onclick="navTo('dashboard',this)">概况</a>
+      <a href="#" data-page="square" onclick="navTo('square',this)">广场</a>
+      <a href="#" data-page="friends" onclick="navTo('friends',this)">好友</a>
+      <a href="#" data-page="profile" onclick="navTo('profile',this)">用户中心</a>
+      <a href="#" data-page="admin" id="nav-admin" class="hidden" onclick="navTo('admin',this)">管理后台</a>
+    </div>
+    <div class="user-info">
+      <span id="nav-username"></span>
+      <span id="nav-badge" class="badge"></span>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">退出</button>
+    </div>
+  </nav>
+
+  <!-- ====== 首页 Dashboard ====== -->
+  <div id="page-dashboard" class="page active">
+    <div class="card">
+      <h2 id="welcome-text">欢迎回来</h2>
+      <p style="color:var(--text2);font-size:.9rem;margin-top:6px">使用 BLFP 客户端输入房间号加入好友的游戏，或通过客户端创建房间邀请好友。</p>
+      <p style="color:var(--accent2);font-size:.9rem;margin-top:6px">QQ交流群：229527551</p>
+      <div style="margin-top:14px">
+        <a id="dash-download-link" class="btn btn-primary" href="#" onclick="openDownloadOverlay(); return false;">下载 BLFP 客户端</a>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="num" id="stat-rooms">-</div><div class="lbl">当前在线房间</div></div>
+      <div class="stat-card"><div class="num" id="stat-users">-</div><div class="lbl">注册用户</div></div>
+      <div class="stat-card"><div class="num" id="stat-nodes">-</div><div class="lbl">可用 EasyTier 节点</div></div>
+    </div>
+    <div class="card">
+      <h2>如何使用</h2>
+      <ol style="padding-left:20px;line-height:2.2;color:var(--text2);font-size:.92rem">
+        <li>下载并安装 <strong style="color:var(--text)">BLFP 客户端</strong></li>
+        <li>使用本账号登录客户端</li>
+        <li>房主点击 <strong style="color:var(--text)">创建房间</strong>，使用 EasyTier 模式建立直连或节点中继</li>
+        <li>将 <strong style="color:var(--accent2)">6 位房间号</strong> 分享给好友</li>
+        <li>好友在客户端输入房间号，连接本地 Minecraft 即可联机</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ====== 广场 ====== -->
+  <div id="page-square" class="page">
+    <div class="card">
+      <h2>公开房间广场</h2>
+      <p style="color:var(--text2);font-size:.88rem;margin-bottom:14px">以下为当前在线的公开房间，点击「加入」复制房间号后在客户端输入加入。</p>
+      <div id="square-list"><div class="empty-state">暂无公开房间</div></div>
+      <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="loadSquare()">刷新</button>
+    </div>
+  </div>
+
+  <!-- ====== 好友 ====== -->
+  <div id="page-friends" class="page">
+    <div class="card">
+      <h2>搜索用户</h2>
+      <div class="search-row">
+        <input id="srv-friend-search" type="text" placeholder="输入用户名搜索" onkeydown="if(event.key==='Enter')searchSrvFriends()">
+        <button class="btn btn-primary btn-sm" onclick="searchSrvFriends()">搜索</button>
+      </div>
+      <div id="srv-friend-search-results" class="list-grid" style="margin-top:12px"></div>
+    </div>
+    <div class="tabs" style="margin-bottom:12px">
+      <button id="sftab-list" class="tab-btn active" onclick="switchSrvFriendTab('list')">好友列表</button>
+      <button id="sftab-requests" class="tab-btn" onclick="switchSrvFriendTab('requests')">收到的申请 <span id="sftab-requests-badge" class="badge hidden"></span></button>
+      <button id="sftab-history" class="tab-btn" onclick="switchSrvFriendTab('history')">发送历史</button>
+    </div>
+    <div id="srv-friends-panel-list">
+      <div class="page-head"><h2>我的好友</h2><button class="btn btn-outline btn-sm" onclick="loadSrvFriends()">刷新</button></div>
+      <div id="srv-friends-list" class="list-grid"><div class="empty-state">暂无好友</div></div>
+    </div>
+    <div id="srv-friends-panel-requests" class="hidden">
+      <div class="page-head"><h2>收到的申请</h2><button class="btn btn-outline btn-sm" onclick="loadSrvFriendRequests()">刷新</button></div>
+      <div id="srv-friends-requests-list" class="list-grid"><div class="empty-state">暂无待处理申请</div></div>
+    </div>
+    <div id="srv-friends-panel-history" class="hidden">
+      <div class="page-head"><h2>发送历史</h2><button class="btn btn-outline btn-sm" onclick="loadSrvFriendHistory()">刷新</button></div>
+      <div id="srv-friends-history-list" class="list-grid"><div class="empty-state">暂无记录</div></div>
+    </div>
+  </div>
+
+  <!-- ====== 用户中心 ====== -->
+  <div id="page-profile" class="page">
+    <div class="card">
+      <h2>账号信息</h2>
+      <div style="display:grid;gap:10px;font-size:.95rem">
+        <div><span style="color:var(--text2)">用户名：</span><span id="p-username"></span></div>
+        <div><span style="color:var(--text2)">角色：</span><span id="p-role"></span></div>
+        <div><span style="color:var(--text2)">邮箱：</span><span id="p-email"></span></div>
+        <div><span style="color:var(--text2)">注册时间：</span><span id="p-created"></span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>修改密码</h2>
+      <div class="form-group"><label>当前密码</label><input id="cp-old" type="password" placeholder="输入当前密码"></div>
+      <div class="form-group"><label>新密码 (至少8位)</label><input id="cp-new" type="password" placeholder="输入新密码"></div>
+      <div class="form-group"><label>确认新密码</label><input id="cp-confirm" type="password" placeholder="再次输入新密码"></div>
+      <button class="btn btn-primary" onclick="doChangePassword()">修改密码</button>
+    </div>
+
+    <!-- 安全设置 -->
+    <div class="card">
+      <h2>安全设置</h2>
+      <div style="display:grid;gap:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-weight:500">两步验证（2FA）</div>
+            <div style="font-size:.82rem;color:var(--text2)">开启后，登录和高危操作均需通过邮箱或QQ验证码二次确认</div>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btn-tfa-toggle" onclick="toggleTfa()">加载中...</button>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border)">
+        <div>
+          <div style="font-weight:500;margin-bottom:6px">绑定QQ</div>
+          <div style="font-size:.82rem;color:var(--text2);margin-bottom:10px" id="p-qq-status">未绑定</div>
+          <button class="btn btn-outline btn-sm" onclick="requestQqBind()">生成绑定验证码</button>
+        </div>
+        <div id="qq-bind-code-box" class="hidden" style="background:var(--bg2,rgba(255,255,255,.04));border-radius:8px;padding:12px">
+          <p style="margin:0 0 6px;font-size:.9rem">请在QQ机器人中发送：</p>
+          <code id="qq-bind-code-text" style="font-size:1.2rem;letter-spacing:4px;color:var(--accent)"></code>
+          <p style="margin:6px 0 0;font-size:.8rem;color:var(--text2)">验证码10分钟内有效</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 外观与动画 -->
+    <div class="card">
+      <h2>外观与动画</h2>
+      <div class="form-group">
+        <label>主题</label>
+        <select id="set-theme" onchange="applyThemeSetting(this.value)">
+          <option value="dark">深色</option>
+          <option value="light">浅色</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>界面动画</label>
+        <select id="set-anim-enabled" onchange="applyAnimEnabled(this.value)">
+          <option value="1">开启</option>
+          <option value="0">关闭</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>动画性能档位</label>
+        <select id="set-anim-level" onchange="applyAnimLevel(this.value)">
+          <option value="high">高（全部特效）</option>
+          <option value="medium">中（保留过渡，弱化模糊）</option>
+          <option value="low">低（仅基础过渡）</option>
+          <option value="off">关（无动画）</option>
+        </select>
+      </div>
+      <p style="color:var(--text2);font-size:.82rem;line-height:1.7">档位越低越省性能：高档启用液态玻璃模糊与鼠标拖尾，中/低档逐级弱化，关闭档移除所有动画与拖尾。设置自动保存到本地浏览器。</p>
+    </div>
+  </div>
+
+  <!-- ====== 管理后台 ====== -->
+  <div id="page-admin" class="page">
+    <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="adminTab('overview')">总览</button>
+      <button class="btn btn-outline" onclick="adminTab('users')">用户管理</button>
+      <button class="btn btn-outline" onclick="adminTab('nodes')">frp 节点</button>
+      <button class="btn btn-outline" onclick="adminTab('easytier-nodes')">EasyTier 节点</button>
+      <button class="btn btn-outline" onclick="adminTab('rooms')">在线房间</button>
+      <button class="btn btn-outline" onclick="adminTab('settings')">系统设置</button>
+      <button class="btn btn-outline" onclick="adminTab('qq-bot')">QQ 机器人</button>
+    </div>
+
+    <!-- 总览 -->
+    <div id="at-overview">
+      <div class="stat-row">
+        <div class="stat-card"><div class="num" id="ad-stat-users">-</div><div class="lbl">总用户数</div></div>
+        <div class="stat-card"><div class="num" id="ad-stat-nodes">-</div><div class="lbl">EasyTier 节点</div></div>
+        <div class="stat-card"><div class="num" id="ad-stat-rooms">-</div><div class="lbl">当前在线房间</div></div>
+      </div>
+    </div>
+
+    <!-- 用户管理 -->
+    <div id="at-users" class="hidden">
+      <div class="toolbar">
+        <input id="user-search" placeholder="搜索用户名..." onkeyup="debounce(loadAdminUsers,400)()">
+        <button class="btn btn-primary btn-sm" onclick="openCreateUserModal()">新建用户</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>用户名</th><th>称号</th><th>角色</th><th>邮箱</th><th>QQ</th><th>状态</th><th>注册时间</th><th>操作</th></tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="users-pagination"></div>
+      </div>
+    </div>
+
+    <!-- frp 节点 -->
+    <div id="at-nodes" class="hidden">
+      <div class="toolbar">
+        <button class="btn btn-primary btn-sm" onclick="openNodeModal()">添加节点</button>
+        <button class="btn btn-outline btn-sm" id="btn-test-all" onclick="testAllNodes()">一键测试全部</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>名称</th><th>地址</th><th>端口</th><th>地区</th><th>带宽</th><th>状态</th><th>状态监控</th><th>操作</th></tr></thead>
+            <tbody id="nodes-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="at-easytier-nodes" class="hidden">
+      <div class="toolbar"><button class="btn btn-primary btn-sm" onclick="openEasyTierNodeModal()">添加 EasyTier 节点</button></div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>名称</th><th>Peer 地址</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead><tbody id="easytier-nodes-tbody"></tbody></table></div></div>
+    </div>
+
+    <!-- 在线房间 -->
+    <div id="at-rooms" class="hidden">
+      <div class="toolbar">
+        <button class="btn btn-outline btn-sm" onclick="loadLiveRooms()">刷新</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>房间号</th><th>房主</th><th>模式</th><th>在线人数</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody id="live-rooms-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 系统设置 -->
+    <div id="at-settings" class="hidden">
+      <div class="card">
+        <h2>首页设置</h2>
+        <div class="form-group"><label>站点标题</label><input id="set-site-title" placeholder="BLFP 联机"></div>
+        <div class="form-group"><label>项目介绍（首页展示）</label><textarea id="set-site-desc" rows="3" placeholder="项目类型讲解文案"></textarea></div>
+        <div class="form-group"><label>客户端下载链接（Windows）</label><input id="set-download-url" placeholder="https://..."></div>
+        <div class="form-group"><label>客户端下载链接（Linux）</label><input id="set-download-url-linux" placeholder="https://..."></div>
+        <div class="form-group"><label>客户端下载链接（MacOS）</label><input id="set-download-url-macos" placeholder="https://..."></div>
+        <div class="form-group"><label>客户端最新版本</label><input id="set-latest-version" placeholder="1.0.0"></div>
+        <div class="form-group"><label>源码仓库地址（预留）</label><input id="set-source-url" placeholder="https://github.com/..."></div>
+        <div class="form-group"><label>更新说明</label><textarea id="set-release-notes" rows="3" placeholder="本次更新内容"></textarea></div>
+        <div class="form-group"><label>公告标题</label><input id="set-ann-title" placeholder="公告标题"></div>
+        <div class="form-group"><label>公告内容</label><textarea id="set-ann-content" rows="4" placeholder="登录后展示给客户端的公告"></textarea></div>
+        <div class="form-group"><label><input id="set-ann-enabled" type="checkbox"> 启用公告</label></div>
+        <div class="form-group"><label>强制阅读秒数</label><input id="set-ann-seconds" type="number" min="0" value="0"></div>
+        <div class="form-group"><label>公告版本</label><input id="set-ann-version" value="1"></div>
+        <div class="form-group"><label><input id="set-force-update" type="checkbox"> 强制更新</label></div>
+        <div class="form-group"><label>客户端默认主题</label>
+          <select id="set-client-theme">
+            <option value="dark">深色（默认）</option>
+            <option value="light">浅色</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()">保存首页与更新设置</button>
+      </div>
+      <div class="card">
+        <h2>邮箱 SMTP 配置</h2>
+        <p style="color:var(--text2);font-size:.85rem;margin-bottom:12px">用于发送注册/登录验证码邮件。</p>
+        <div class="form-group"><label>SMTP 服务器</label><input id="set-smtp-host" placeholder="如：smtp.qq.com"></div>
+        <div class="form-group"><label>端口</label><input id="set-smtp-port" type="number" placeholder="465"></div>
+        <div class="form-group"><label>加密方式</label>
+          <select id="set-smtp-secure"><option value="1">SSL/TLS（465）</option><option value="0">STARTTLS/无（587/25）</option></select>
+        </div>
+        <div class="form-group"><label>发信账号</label><input id="set-smtp-user" placeholder="邮箱账号"></div>
+        <div class="form-group"><label>授权码/密码</label><input id="set-smtp-pass" type="password" placeholder="留空表示不修改"></div>
+        <div class="form-group"><label>发件人显示（选填）</label><input id="set-smtp-from" placeholder="如：BLFP &lt;no-reply@blfp.com&gt;"></div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="saveSettings()">保存 SMTP 配置</button>
+          <button class="btn btn-outline" onclick="testSmtp()">测试连接</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QQ 机器人面板 -->
+    <div id="at-qq-bot" class="hidden">
+      <div class="card">
+        <h2>QQ 机器人配置</h2>
+        <p style="color:var(--text2);font-size:.85rem;margin-bottom:14px">通过 OneBot 协议接入 QQ 机器人（NapCat / LLOneBot 等）。机器人框架需将 HTTP 上报地址指向本服务器。</p>
+        <div class="form-group"><label><input id="qqb-enabled" type="checkbox"> 启用 QQ 机器人</label></div>
+        <div class="form-group">
+          <label>OneBot HTTP API 地址 <span style="font-size:.78rem;color:var(--text2)">（服务端调此地址向 QQ 回复消息）</span></label>
+          <input id="qqb-api-url" placeholder="http://127.0.0.1:3000">
+        </div>
+        <div class="form-group">
+          <label>Access Token <span style="font-size:.78rem;color:var(--text2)">（机器人框架的鉴权令牌，与 NapCat HTTP 服务端 token 一致，留空则不鉴权）</span></label>
+          <input id="qqb-access-token" type="password" placeholder="留空表示不修改">
+        </div>
+        <div style="background:var(--bg2,rgba(255,255,255,.04));border-radius:8px;padding:12px;margin-bottom:14px">
+          <div style="font-size:.85rem;font-weight:500;margin-bottom:6px">机器人消息上报地址（填入机器人框架）</div>
+          <code id="qqb-webhook-url" style="font-size:.82rem;color:var(--accent2);word-break:break-all;user-select:all"></code>
+        </div>
+        <button class="btn btn-primary" onclick="saveQqBotConfig()">保存配置</button>
+      </div>
+      <div class="card">
+        <h2>支持的命令</h2>
+        <div style="display:grid;gap:6px;font-size:.88rem">
+          <div><code>/ping</code> — 测试机器人状态</div>
+          <div><code>/list</code> — 查看在线房间列表</div>
+          <div><code>/frp</code> — 查看 frp 节点状态</div>
+          <div><code>/et</code> — 查看 EasyTier 节点状态</div>
+          <div><code>/getclient</code> — 获取客户端下载链接</div>
+          <div><code>/info</code> — 查看自己绑定账号信息</div>
+          <div><code>/verify [验证码]</code> — 绑定QQ / 2FA 验证</div>
+          <div><code>/help</code> / <code>/help admin</code> — 查看命令列表</div>
+          <div style="color:var(--text2);margin-top:4px;font-style:italic">管理员专属：</div>
+          <div><code>/user</code> <code>/ban [天] [用户]</code> <code>/unban</code> <code>/close [房间号]</code> <code>/set [用户] [组]</code> <code>/confirm</code></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== 模态框：新建/编辑用户 ====== -->
+<div class="modal-backdrop" id="user-modal">
+  <div class="modal">
+    <h3 id="user-modal-title">新建用户</h3>
+    <input type="hidden" id="um-id">
+    <div class="form-group"><label>用户名</label><input id="um-user" type="text" placeholder="用户名"></div>
+    <div class="form-group"><label>密码 <span id="um-pass-hint" style="color:var(--text2);font-size:.8rem">(留空不修改)</span></label><input id="um-pass" type="password" placeholder="密码"></div>
+    <div class="form-group"><label>角色</label><select id="um-role" onchange="onRoleChange(this.value)"><option value="user">user</option><option value="sponsor">sponsor</option><option value="admin">admin</option></select></div>
+    <div class="form-group"><label>邮箱（选填）</label><input id="um-email" type="email" placeholder="邮箱"></div>
+    <div class="form-group"><label>自定义头衔</label><input id="um-title" maxlength="80" placeholder="例如：星辉赞助者"></div>
+    <div class="form-group"><label>头衔主题</label><select id="um-theme"><option value="role">跟随权限组</option><option value="dark">默认</option><option value="gold">金色</option><option value="violet">紫罗兰</option><option value="ice">冰晶</option><option value="emerald">翡翠</option></select></div>
+    <div class="form-group"><label>状态</label>
+      <select id="um-banned" onchange="onBannedChange(this.value)"><option value="0">正常</option><option value="1">封禁</option></select>
+    </div>
+    <div class="form-group hidden" id="um-ban-days-row"><label>封禁天数（留空为永久）</label><input id="um-ban-days" type="number" min="1" placeholder="如：7"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('user-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveUser()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 模态框：新建/编辑 frp 节点 ====== -->
+<div class="modal-backdrop" id="node-modal">
+  <div class="modal">
+    <h3 id="node-modal-title">添加 frp 节点</h3>
+    <input type="hidden" id="nm-id">
+    <div class="form-group"><label>节点名称</label><input id="nm-name" placeholder="如：华东1 - 上海"></div>
+    <div class="form-group"><label>服务器地址</label><input id="nm-host" placeholder="IP 或域名"></div>
+    <div class="form-group"><label>frps 端口</label><input id="nm-port" type="number" value="7000"></div>
+    <div class="form-group"><label>Token（选填）</label><input id="nm-token" placeholder="frps token"></div>
+    <div class="form-group"><label>连接 TLS</label>
+      <select id="nm-tls"><option value="0">关闭（默认）</option><option value="1">启用</option></select>
+    </div>
+    <div class="form-group"><label>地区</label><input id="nm-region" placeholder="如：华东"></div>
+    <div class="form-group"><label>带宽</label><input id="nm-bandwidth" placeholder="如：100Mbps"></div>
+    <div class="form-group"><label>状态</label>
+      <select id="nm-enabled"><option value="1">启用</option><option value="0">禁用</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('node-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveNode()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="easytier-node-modal"><div class="modal"><h3 id="easytier-node-modal-title">添加 EasyTier 节点</h3><input type="hidden" id="enm-id"><div class="form-group"><label>节点名称</label><input id="enm-name" placeholder="如：华东中继"></div><div class="form-group"><label>Peer 地址</label><input id="enm-peer" placeholder="tcp://node.example.com:11010"></div><div class="form-group"><label>类型</label><select id="enm-kind"><option value="relay">中继</option><option value="signaling">信令</option></select></div><div class="form-group"><label>状态</label><select id="enm-enabled"><option value="1">启用</option><option value="0">禁用</option></select></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('easytier-node-modal')">取消</button><button class="btn btn-primary" onclick="saveEasyTierNode()">保存</button></div></div></div>
+
+<!-- ====== 模态框：退出登录二次确认 ====== -->
+<div class="modal-backdrop" id="logout-modal">
+  <div class="modal" style="width:360px">
+    <h3>退出登录</h3>
+    <p style="color:var(--text2);font-size:.92rem;line-height:1.7">确定要退出当前账号吗？退出后需要重新登录。</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('logout-modal')">取消</button>
+      <button class="btn btn-danger" onclick="confirmLogout()">确定退出</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Toast 提示 ====== -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- ====== 下载叠加层 ====== -->
+<div class="dl-overlay" id="dl-overlay" onclick="if(event.target===this)closeDownloadOverlay()">
+  <div class="dl-card" role="dialog" aria-modal="true" aria-label="下载客户端">
+    <button class="dl-close" onclick="closeDownloadOverlay()" aria-label="关闭">&times;</button>
+    <img class="dl-logo" src="/BLFP-Logo.svg" alt="BLFP">
+    <h2 id="dl-title">下载 BLFP 联机助手</h2>
+    <p class="dl-sub" id="dl-ver">全平台客户端下载</p>
+    <div class="dl-list">
+      <a class="dl-item" id="dl-win" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M3 5.5 10.5 4.4v7.1H3V5.5zm0 13 7.5 1.1v-7.1H3v6zM11.5 4.2 21 3v8.5h-9.5V4.2zm0 15.6L21 21v-8.5h-9.5v7.3z"/></svg>
+        <div class="dl-meta"><b>Windows</b><span>安装版 · 推荐 Windows 10/11</span></div>
+        <span class="dl-arrow">↓</span>
+      </a>
+      <a class="dl-item" id="dl-linux" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 2c-2.6 0-4.2 2-4.2 4.6 0 1.7-.5 2.9-1.4 4.2-.9 1.4-2 2.9-2 5 0 1.6.7 3 1.8 3.9.5.4 1.1.6 1.8.6.6 0 1.2-.2 1.7-.5.7.4 1.5.6 2.3.6s1.6-.2 2.3-.6c.5.3 1.1.5 1.7.5.7 0 1.3-.2 1.8-.6 1.1-.9 1.8-2.3 1.8-3.9 0-2.1-1.1-3.6-2-5-.9-1.3-1.4-2.5-1.4-4.2C16.2 4 14.6 2 12 2zm-1.6 4.2c.4 0 .8.4.8 1s-.4 1-.8 1-.8-.4-.8-1 .4-1 .8-1zm3.2 0c.4 0 .8.4.8 1s-.4 1-.8 1-.8-.4-.8-1 .4-1 .8-1z"/></svg>
+        <div class="dl-meta"><b>Linux</b><span>便携版 · AppImage / deb</span></div>
+        <span class="dl-arrow">↓</span>
+      </a>
+      <a class="dl-item" id="dl-macos" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M16.7 12.9c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3.1 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.6-1-2.7-3.9zM14.4 5.6c.7-.8 1.1-1.9 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4z"/></svg>
+        <div class="dl-meta"><b>MacOS</b><span>便携版 · Apple Silicon / Intel</span></div>
+        <span class="dl-arrow">↓</span>
+      </a>
+    </div>
+    <div class="dl-foot">BLFP 联机助手</div>
+  </div>
+</div>
+
+<script src="/app.js?v=2.1.0"></script>
+</body>
+</html>

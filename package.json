@@ -1,0 +1,23 @@
+{
+  "name": "blfp-server",
+  "version": "1.0.0",
+  "description": "Minecraft Java 联机软件 - 服务端 (EasyTier 组网控制 + frps 节点管理 + 后台)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "build:protected": "node scripts/build-protected.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.23.1",
+    "nodemailer": "^6.10.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.1"
+  }
+}
