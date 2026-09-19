@@ -72,6 +72,13 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/nodes', require('./routes/nodes'));
 app.use('/api/easytier-nodes', require('./routes/easytier-nodes'));
 app.get('/api/rooms/public', authMiddleware, async (req, res) => res.json(getPublicRooms()));
+app.get('/api/rooms/public/:code/detail', authMiddleware, async (req, res) => {
+  /* 房间详情（客户端点房间卡片时调用，之前缺失导致 404） */
+  const code = String(req.params.code || '');
+  const room = getPublicRooms().find((r) => r.room_code === code);
+  if (!room) return res.status(404).json({ error: '房间不存在或已关闭' });
+  res.json(Object.assign({}, room, { latency: 0, members: [], motd: '' }));
+});
 app.use('/api/rooms', require('./routes/rooms'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/friends', require('./routes/friends'));

@@ -73,6 +73,11 @@ function signToken(user) {
 }
 
 // 发送邮箱验证码（注册 / 登录通用）
+/* 验证码配置（客户端登录页加载时调用；未接 geetest 时返回关闭） */
+router.get('/captcha-config', async (req, res) => {
+  res.json({ enabled: false, gt: '', challenge: '' });
+});
+
 router.post('/send-code', async (req, res) => {
   const email = normalizeEmail(req.body.email);
   const { purpose } = req.body;
