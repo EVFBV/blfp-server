@@ -47,6 +47,11 @@ function loadJwtSecret() {
   return null;
 }
 const JWT_SECRET = loadJwtSecret();
+/* 密钥指纹（便于与主服务器比对，确认两边密钥一致；不可逆） */
+function secretFingerprint(secret) {
+  if (!secret) return '(无)';
+  return require('crypto').createHash('sha256').update(String(secret)).digest('hex').slice(0, 12);
+}
 
 /* ---------- 公告持久化（本地 JSON 文件，无需数据库） ---------- */
 function readAnnouncement() {
@@ -133,7 +138,7 @@ const server = http.createServer(async (req, res) => {
   /* 公告发布/更新（需 admin 或 dev 身份，角色取自 token，不查库） */
   if (pathname === '/api/settings/announcement' && req.method === 'POST') {
     const user = authUser(req);
-    if (!user) return sendJson(res, 401, { error: '未登录或登录已过期' });
+    if (!user) return sendJson(res, 401, { error: '未登录或登录已过期（本服务 JWT 密钥指纹 ' + secretFingerprint(JWT_SECRET) + '，需与主服务器一致）' });
     if (user.role !== 'admin' && user.role !== 'dev') return sendJson(res, 403, { error: '需要管理员或开发者权限' });
     const body = await readBody(req);
     if (!body) return sendJson(res, 400, { error: '请求体不合法' });
@@ -246,4 +251,5 @@ server.listen(PORT, HOST, () => {
   console.log('[Chat] WebSocket: ws://' + HOST + ':' + PORT + '/ws?token=<JWT>');
   console.log('[Chat] 公告接口: GET/POST http://' + HOST + ':' + PORT + '/api/settings/announcement');
   console.log('[Chat] 数据库: 不需要（公告存于 ' + ANNOUNCE_FILE + '）');
+  console.log('[Chat] JWT 密钥指纹: ' + secretFingerprint(JWT_SECRET) + '  ← 必须与主服务器一致，否则客户端会报"未登录或登录已过期"');
 });
