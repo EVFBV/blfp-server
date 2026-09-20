@@ -63,3 +63,15 @@ test('请求签名绑定方法、路径、时间戳、nonce 和请求体', () =>
   assert.equal(verifyRequestSignature({ ...input, method: 'PUT', signature }), false);
   assert.equal(verifyRequestSignature({ ...input, signature: `${signature}00` }), false);
 });
+
+test('et-port-update 消息被接受（房主切换随机端口时通知访客）', () => {
+  const { validateMessage } = require('./security-logic');
+  assert.strictEqual(validateMessage({ type: 'et-port-update', port: 51234 }), true);
+  assert.strictEqual(validateMessage({ type: 'et-port-update', port: 25565 }), true);
+  /* 非法端口必须拒绝 */
+  assert.strictEqual(validateMessage({ type: 'et-port-update', port: 0 }), false);
+  assert.strictEqual(validateMessage({ type: 'et-port-update', port: 70000 }), false);
+  assert.strictEqual(validateMessage({ type: 'et-port-update', port: 'abc' }), false);
+  /* 多余字段必须拒绝（防注入其他字段） */
+  assert.strictEqual(validateMessage({ type: 'et-port-update', port: 25565, extra: 1 }), false);
+});

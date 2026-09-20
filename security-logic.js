@@ -12,6 +12,8 @@ const MESSAGE_FIELDS = {
   leave: new Set(['type', 'room']),
   signal: new Set(['type', 'to', 'data']),
   chat: new Set(['type', 'text', 'username', 'userId']),
+  /* 房主端口变化时通知访客（代理端口被占用会切换随机端口，缺这条会让访客连错端口）*/
+  'et-port-update': new Set(['type', 'port']),
 };
 
 function isPlainObject(value) {
@@ -39,6 +41,9 @@ function isSignalData(value) {
 function validateMessage(msg) {
   if (!isPlainObject(msg) || typeof msg.type !== 'string' || !Object.hasOwn(MESSAGE_FIELDS, msg.type)) return false;
   if (!hasOnlyFields(msg, MESSAGE_FIELDS[msg.type])) return false;
+  if (msg.type === 'et-port-update') {
+    return isPort(msg.port);
+  }
   if (msg.type === 'chat') {
     if (typeof msg.text !== 'string' || !msg.text.length || msg.text.length > 500) return false;
     if (msg.username !== undefined && (typeof msg.username !== 'string' || msg.username.length > 100)) return false;
