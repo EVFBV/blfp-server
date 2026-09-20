@@ -8,6 +8,19 @@ const { authMiddleware, adminOnly } = require('./middleware/auth');
 const requestSignature = require('./middleware/request-signature');
 const { getInstallState, initialize, upgrade } = require('./install-service');
 
+
+
+const { wrapAsyncHandler, makeAsyncSafe } = require('./middleware/async-safe');
+
+/* 进程级兜底：漏网的异常也不让服务器退出 */
+process.on('unhandledRejection', (reason) => {
+  const msg = reason && reason.message ? reason.message : String(reason);
+  console.error('[Server] 未处理的 Promise 拒绝（已拦截，进程继续运行）:', msg);
+});
+process.on('uncaughtException', (error) => {
+  console.error('[Server] 未捕获异常（已拦截，进程继续运行）:', error && error.stack ? error.stack : error);
+});
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 const db = require('./db');
@@ -67,10 +80,10 @@ app.use((req, res, next) => {
 });
 
 // ============ API 路由 ============
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/admin', require('./routes/admin'));
-app.use('/api/nodes', require('./routes/nodes'));
-app.use('/api/easytier-nodes', require('./routes/easytier-nodes'));
+app.use('/api/auth', makeAsyncSafe(require('./routes/auth')));
+app.use('/api/admin', makeAsyncSafe(require('./routes/admin')));
+app.use('/api/nodes', makeAsyncSafe(require('./routes/nodes')));
+app.use('/api/easytier-nodes', makeAsyncSafe(require('./routes/easytier-nodes')));
 app.get('/api/rooms/public', authMiddleware, async (req, res) => res.json(getPublicRooms()));
 app.get('/api/rooms/public/:code/detail', authMiddleware, async (req, res) => {
   /* 房间详情（客户端点房间卡片时调用，之前缺失导致 404） */
@@ -79,12 +92,12 @@ app.get('/api/rooms/public/:code/detail', authMiddleware, async (req, res) => {
   if (!room) return res.status(404).json({ error: '房间不存在或已关闭' });
   res.json(Object.assign({}, room, { latency: 0, members: [], motd: '' }));
 });
-app.use('/api/rooms', require('./routes/rooms'));
-app.use('/api/settings', require('./routes/settings'));
-app.use('/api/friends', require('./routes/friends'));
-app.use('/api/chat', require('./routes/chat'));
-app.use('/api/qq', require('./routes/qq'));
-app.use('/api/frp', require('./routes/frp-sessions'));
+app.use('/api/rooms', makeAsyncSafe(require('./routes/rooms')));
+app.use('/api/settings', makeAsyncSafe(require('./routes/settings')));
+app.use('/api/friends', makeAsyncSafe(require('./routes/friends')));
+app.use('/api/chat', makeAsyncSafe(require('./routes/chat')));
+app.use('/api/qq', makeAsyncSafe(require('./routes/qq')));
+app.use('/api/frp', makeAsyncSafe(require('./routes/frp-sessions')));
 
 // 在线房间（内存实时状态，供后台展示）
 app.get('/api/admin/live-rooms', authMiddleware, adminOnly, async (req, res) => {
@@ -189,7 +202,15 @@ async function start() {
       await db.initSchema();
       await db.execute('DELETE FROM rooms');
     }
-    server.listen(PORT, () => {
+    /* ====== 统一错误处理：async 处理器抛出的异常在这里变成 500，而不是让进程退出 ====== */
+app.use((err, req, res, next) => {
+  const message = err && err.message ? String(err.message).slice(0, 200) : '内部错误';
+  console.error('[Server] 请求处理失败:', req.method, req.path, '→', message);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: '服务器内部错误' });
+});
+
+server.listen(PORT, () => {
       console.log(`[Server] HTTP + Web 已启动: http://localhost:${PORT}`);
       console.log(`[Server] 安装模式: ${hasDatabaseConfig ? '已配置数据库，正常运行' : '未配置数据库，等待系统初始化'}`);
       console.log(`[Server] 宣传首页: https://${PUBLIC_HOST}/`);
